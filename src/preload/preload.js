@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('systemMonitor', {
     getNetworkInfo: () => ipcRenderer.invoke('system:getNetworkInfo'),
     getBatteryInfo: () => ipcRenderer.invoke('system:getBatteryInfo'),
     getProcesses: () => ipcRenderer.invoke('system:getProcesses'),
+    getSensors: () => ipcRenderer.invoke('system:getSensors'),
 
     // Dependencies
     scanNpm: () => ipcRenderer.invoke('deps:scanNpm'),

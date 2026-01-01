@@ -51,7 +51,11 @@ class SystemMonitor {
 
     async updateDashboard() {
         try {
-            const [overview, processes] = await Promise.all([window.systemMonitor.getOverview(), window.systemMonitor.getProcesses()]);
+            const [overview, processes, sensors] = await Promise.all([
+                window.systemMonitor.getOverview(),
+                window.systemMonitor.getProcesses(),
+                window.systemMonitor.getSensors()
+            ]);
             document.getElementById('hostname').textContent = overview.os.hostname;
             document.getElementById('uptime').textContent = `Uptime: ${this.formatUptime(overview.uptime)}`;
             this.updateGauge('cpu', overview.cpu.usage);
@@ -68,6 +72,7 @@ class SystemMonitor {
             document.getElementById('memory-detail').textContent = `${this.formatBytes(overview.memory.used)} / ${this.formatBytes(overview.memory.total)}`;
             document.getElementById('disk-detail').textContent = `${this.formatBytes(overview.disk.used)} / ${this.formatBytes(overview.disk.total)}`;
             this.renderProcesses(processes.top);
+            this.updateSensors(sensors);
         } catch (err) { console.error('Dashboard error:', err); }
     }
 
@@ -81,7 +86,37 @@ class SystemMonitor {
     }
 
     renderProcesses(processes) {
-        document.getElementById('processes-list').innerHTML = processes.map(p => `<div class="table-row"><span class="process-name">${p.name}</span><span class="process-cpu">${p.cpu}%</span><span class="process-mem">${p.mem}%</span><span class="process-status ${p.state === 'running' ? 'status-running' : 'status-sleeping'}">${p.state}</span></div>`).join('');
+        document.getElementById('processes-list').innerHTML = processes.map(p => `<div class="table-row">
+            <span class="process-name" title="PID: ${p.pid}">${p.name}</span>
+            <span class="process-cpu">${p.cpuNormalized}% <small style="opacity:0.5; font-size:0.8em">(${p.cpu}% core)</small></span>
+            <span class="process-mem">${p.mem}%</span>
+            <span class="process-status ${p.state === 'running' ? 'status-running' : 'status-sleeping'}">${p.state}</span>
+        </div>`).join('');
+    }
+
+    updateSensors(sensors) {
+        // CPU Temp
+        if (sensors.cpu.main) {
+            const temp = sensors.cpu.main;
+            document.getElementById('sensor-cpu-temp').textContent = `${temp.toFixed(1)}°C`;
+            document.getElementById('sensor-cpu-bar').style.width = `${Math.min(100, temp)}%`;
+
+            // Dynamic Color
+            const bar = document.getElementById('sensor-cpu-bar');
+            if (temp > 80) bar.style.background = '#ef4444'; // Red
+            else if (temp > 60) bar.style.background = '#f59e0b'; // Orange
+            else bar.style.background = '#10b981'; // Green
+        } else {
+            document.getElementById('sensor-cpu-temp').textContent = `N/A`;
+        }
+
+        // GPU
+        if (sensors.gpu.controllers && sensors.gpu.controllers.length > 0) {
+            const gpu = sensors.gpu.controllers[0];
+            document.getElementById('sensor-gpu-model').textContent = gpu.model || 'GPU';
+            document.getElementById('sensor-gpu-temp').textContent = gpu.temperature ? `${gpu.temperature}°C` : 'N/A';
+            document.getElementById('sensor-gpu-util').textContent = gpu.utilization ? `${gpu.utilization}%` : 'Active';
+        }
     }
 
     async updateCpu() {

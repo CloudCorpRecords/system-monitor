@@ -350,18 +350,22 @@ body {
 
 .cpu-gauge {
   stroke: #3b82f6;
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
 }
 
 .memory-gauge {
   stroke: #8b5cf6;
+  filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.6));
 }
 
 .disk-gauge {
   stroke: #10b981;
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.6));
 }
 
 .battery-gauge {
   stroke: #f59e0b;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6));
 }
 
 .gauge-value {

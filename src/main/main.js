@@ -58,6 +58,10 @@ ipcMain.handle('system:getOverview', async () => {
     return await systemInfo.getOverview();
 });
 
+ipcMain.handle('system:getSensors', async () => {
+    return await systemInfo.getSensors();
+});
+
 ipcMain.handle('system:getCpuInfo', async () => {
     return await systemInfo.getCpuInfo();
 });

@@ -242,6 +242,7 @@ Computer Control:
 - [ACTION:RUN_CMD:command] - Run a terminal command
 - [ACTION:NOTIFY:message] - Show a notification
 - [ACTION:SET_VOLUME:level] - Set volume (0-100)
+- [ACTION:KILL_PROCESS:pid] - Kill a process (e.g., [ACTION:KILL_PROCESS:1234]). ALWAYS check the PID first by asking me or checking the top processes list. Ask for confirmation before killing if unsure.
 
 Be concise, personalized, and reference past conversations when relevant. When suggesting actions, include the relevant action tags.`;
 
