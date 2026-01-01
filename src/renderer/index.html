@@ -354,6 +354,22 @@
           <pre id="network-scan-results"
             style="margin-top:15px; padding: 15px; background: #000; border-radius: 8px; min-height:150px; color: #0f0; font-family: monospace; overflow-x: auto;">Ready to scan...</pre>
         </div>
+
+        <!-- Red Team Scanner -->
+        <div class="card" style="margin-top: 20px; border: 1px solid #ef444455;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+            <h3 style="color: #ef4444;">Red Team Recon 🎯</h3>
+          </div>
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="text" id="red-team-target" placeholder="Target IP (e.g. 192.168.1.1)"
+              style="flex:1; padding: 10px; background: #1a1a2e; border: 1px solid #333; color: white; border-radius: 6px;">
+            <button id="btn-red-team-scan" class="btn btn-danger"
+              style="background: #ef4444; color: white; border:none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Scan
+              Ports</button>
+          </div>
+          <pre id="red-team-results"
+            style="padding: 15px; background: #000; border-radius: 8px; min-height:100px; color: #ef4444; font-family: monospace; overflow-x: auto;">Enter a target IP to check for vulnerabilities...</pre>
+        </div>
       </div>
 
       <div id="dependencies" class="panel">

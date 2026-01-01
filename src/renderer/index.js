@@ -234,6 +234,30 @@ class SystemMonitor {
                 }
             }
         });
+
+        // Red Team
+        const btnRedTeam = document.getElementById('btn-red-team-scan');
+        const inputTarget = document.getElementById('red-team-target');
+        const redResults = document.getElementById('red-team-results');
+
+        if (btnRedTeam) btnRedTeam.addEventListener('click', async () => {
+            const target = inputTarget ? inputTarget.value : '127.0.0.1';
+            if (!target) { alert('Enter a target IP'); return; }
+
+            if (redResults) redResults.textContent = `Scanning target ${target} for open ports (Red Team Mode)...\nThis may take 10-20 seconds...`;
+
+            const res = await window.systemMonitor.executeAIAction({ action: 'RED_TEAM_SCAN', param: target });
+
+            if (redResults) {
+                if (res.openPorts && res.openPorts.length > 0) {
+                    redResults.textContent = `Target: ${res.host}\n[+] OPEN PORTS FOUND:\n${res.openPorts.map(p => `   -> Port ${p}`).join('\n')}\n\n[Status]: VULNERABLE`;
+                } else if (res.host) {
+                    redResults.textContent = `Target: ${res.host}\n[-] No common open ports found (Scanned Top 20).`;
+                } else {
+                    redResults.textContent = 'Scan failed: ' + (res.error || 'Unknown error');
+                }
+            }
+        });
     }
 
     async updateNetwork() {
