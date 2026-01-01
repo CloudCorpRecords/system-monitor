@@ -22,7 +22,14 @@
 - **🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
 - **📦 Auto-Setup**: "Quick Setup" button automatically installs Ollama and downloads models.
 
-## 🚀 Getting Started
+## �️‍♂️ Red Team Capabilities
+The app helps you audit your local network security with agentic tools:
+*   **Auto Recon 🚀**: One-click subnet discovery. Maps all devices on your LAN.
+*   **Vulnerability Scanner**: Multi-threaded port scanning to find exposed services (22, 80, 443, etc).
+*   **Service Identification**: automatically grabs banners to identify software versions (e.g. `Apache/2.4`, `OpenSSH`).
+*   **Report Generation**: Creates structured reports of all found targets.
+
+## �🚀 Getting Started
 
 ### One-Click Installer (Recommended)
 We've included a script that automatically builds and installs the app to your `/Applications` folder.
