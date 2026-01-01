@@ -54,5 +54,8 @@ contextBridge.exposeInMainWorld('systemMonitor', {
     notify: (title, message) => ipcRenderer.invoke('computer:notify', { title, message }),
     emptyTrash: () => ipcRenderer.invoke('computer:emptyTrash'),
     setVolume: (level) => ipcRenderer.invoke('computer:setVolume', level),
-    runSpeedTest: () => ipcRenderer.invoke('computer:runSpeedTest')
+    runSpeedTest: () => ipcRenderer.invoke('computer:runSpeedTest'),
+
+    // Cyber Shield
+    searchBlocklist: (query) => ipcRenderer.invoke('cyber-shield:search-blocklist', query)
 });

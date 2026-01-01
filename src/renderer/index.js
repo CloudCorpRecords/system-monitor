@@ -283,7 +283,40 @@ class SystemMonitor {
                 if (redResults) redResults.textContent = 'Auto Scan failed: ' + (res.error || 'Unknown error');
             }
         });
+
+
+
+
+        // Blocklist Search - Added to setupSecurity
+        const btnBlockSearch = document.getElementById('blocklist-search-btn');
+        const inputBlockSearch = document.getElementById('blocklist-search-input');
+        const blockSearchResults = document.getElementById('blocklist-search-results');
+
+        if (btnBlockSearch) btnBlockSearch.addEventListener('click', async () => {
+            const query = inputBlockSearch ? inputBlockSearch.value.trim() : '';
+            if (!query) { alert('Enter a domain to check'); return; }
+            if (query.length < 3) { alert('Query too short'); return; }
+
+            if (blockSearchResults) blockSearchResults.innerHTML = '<span style="color:#888;">Searching...</span>';
+
+            try {
+                const res = await window.systemMonitor.searchBlocklist(query);
+                if (res.success) {
+                    if (res.matches.length > 0) {
+                        blockSearchResults.innerHTML = `<div style="color:#4ade80; margin-bottom:5px;">Found ${res.matches.length} matches:</div>` +
+                            res.matches.map(m => `<div style="padding:2px 0;">${m}</div>`).join('');
+                    } else {
+                        blockSearchResults.innerHTML = '<span style="color:#888;">No matches found in active blocklist.</span>';
+                    }
+                } else {
+                    blockSearchResults.innerHTML = `<span style="color:#ef4444;">Error: ${res.error}</span>`;
+                }
+            } catch (e) {
+                if (blockSearchResults) blockSearchResults.innerHTML = `<span style="color:#ef4444;">Error: ${e.message}</span>`;
+            }
+        });
     }
+
 
     async updateNetwork() {
         try {

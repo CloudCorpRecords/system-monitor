@@ -55,8 +55,21 @@ class CyberShield {
             const tempPath = path.join(app.getPath('temp'), 'hosts_new');
             await fs.writeFile(tempPath, blocklist);
 
-            const command = `do shell script "cp '${tempPath}' '${this.hostsPath}'" with administrator privileges`;
-            await execAsync(`osascript -e '${command}'`);
+            // Escape double quotes for the AppleScript string
+            const safeTempPath = tempPath.replace(/"/g, '\\"');
+            const safeHostsPath = this.hostsPath.replace(/"/g, '\\"');
+
+            // We use double quotes for the AppleScript string, and single quotes for the shell path
+            // But we need to use a different quoting strategy for the execAsync call to avoid conflicts
+            // Strategy: escaping double quotes for the shell command
+
+            const appleScript = `do shell script "cp '${safeTempPath}' '${safeHostsPath}'" with administrator privileges`;
+
+            // Write AppleScript to temp file to avoid complex quoting issues
+            const scriptPath = path.join(app.getPath('temp'), 'enable_shield.scpt');
+            await fs.writeFile(scriptPath, appleScript);
+
+            await execAsync(`osascript "${scriptPath}"`);
 
             return { success: true, message: 'AdBlock Enabled (System-wide)' };
         } catch (e) {
@@ -73,8 +86,17 @@ class CyberShield {
                 return { success: false, error: 'No backup found' };
             }
 
-            const command = `do shell script "cp '${this.backupPath}' '${this.hostsPath}'" with administrator privileges`;
-            await execAsync(`osascript -e '${command}'`);
+            // Escape double quotes for paths
+            const safeBackupPath = this.backupPath.replace(/"/g, '\\"');
+            const safeHostsPath = this.hostsPath.replace(/"/g, '\\"');
+
+            const appleScript = `do shell script "cp '${safeBackupPath}' '${safeHostsPath}'" with administrator privileges`;
+
+            // Write AppleScript to temp file to avoid complex quoting issues
+            const scriptPath = path.join(app.getPath('temp'), 'disable_shield.scpt');
+            await fs.writeFile(scriptPath, appleScript);
+
+            await execAsync(`osascript "${scriptPath}"`);
 
             return { success: true, message: 'AdBlock Disabled' };
         } catch (e) {
@@ -90,6 +112,21 @@ class CyberShield {
                 res.on('end', () => resolve(data));
             }).on('error', err => reject(err));
         });
+    }
+
+    async searchBlocklist(query) {
+        try {
+            const content = await fs.readFile(this.hostsPath, 'utf8');
+            const lines = content.split('\n');
+            const matches = lines
+                .filter(line => !line.trim().startsWith('#') && line.includes(query))
+                .slice(0, 50) // Limit results
+                .map(line => line.trim());
+
+            return { success: true, matches };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
     }
 }
 

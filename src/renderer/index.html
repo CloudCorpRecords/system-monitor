@@ -343,6 +343,17 @@
             </div>
             <small style="opacity:0.5; display:block; margin-top:8px; font-size: 0.8em;">* Requires Admin
               Password</small>
+
+            <div class="blocklist-search" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="blocklist-search-input" placeholder="Check domain block (e.g. youtube.com)"
+                  style="flex: 1; padding: 8px; background: #0f0f1a; border: 1px solid #333; color: white; border-radius: 4px;">
+                <button id="blocklist-search-btn" class="btn btn-secondary" style="padding: 8px 12px;">🔎</button>
+              </div>
+              <div id="blocklist-search-results"
+                style="margin-top: 10px; font-family: monospace; font-size: 0.85em; max-height: 100px; overflow-y: auto; color: #888;">
+              </div>
+            </div>
           </div>
         </div>
 

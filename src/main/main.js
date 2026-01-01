@@ -322,6 +322,11 @@ ipcMain.handle('ai:executeAction', async (event, actionData) => {
     }
 });
 
+// IPC Handlers for Cyber Shield
+ipcMain.handle('cyber-shield:search-blocklist', async (event, query) => {
+    return await cyberShield.searchBlocklist(query);
+});
+
 // ==================== COMPUTER CONTROL ====================
 
 // Ollama Management
