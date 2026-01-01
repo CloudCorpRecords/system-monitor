@@ -16,39 +16,38 @@
   - "Clean up my system"
   - "Check for outdated packages"
   - "Tell me what's using the most RAM"
-- **🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
+- **�️ Cyber Shield**: System-wide ad blocking, network scanning, and process monitoring.
+- **⚡️ Agentic Autonomy**: The AI proactively manages your system with self-created rules (e.g., "When I open Code, turn on Do Not Disturb").
+- **�🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
 - **📦 Auto-Setup**: "Quick Setup" button automatically installs Ollama and downloads models.
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- macOS (Apple Silicon recommended for local AI)
-- Node.js (v18 or higher)
-- [GitHub CLI](https://cli.github.com/) (optional, for easier cloning)
+### One-Click Installer (Recommended)
+We've included a script that automatically builds and installs the app to your `/Applications` folder.
 
-### Installation
+```bash
+# Clone and Install
+git clone https://github.com/CloudCorpRecords/system-monitor.git
+cd system-monitor
+chmod +x install_local.sh
+./install_local.sh
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/CloudCorpRecords/system-monitor.git
-   cd system-monitor
-   ```
+### Manual Build
+If you prefer to build manually or generate a `.dmg` installer for distribution:
 
-2. **Install dependencies**
+1. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. **Run in development mode**
-   ```bash
-   npm run dev
-   ```
-
-4. **Build for production**
+2. **Build Release**
    ```bash
    npm run build
    ```
-   This creates a standalone `.app` in the `release/mac-arm64` folder.
+   *   **Application**: `release/mac-arm64/System Monitor.app`
+   *   **Installer**: `release/System Monitor Installer.dmg` (Perfect for sharing)
 
 ## 🤝 Contributing
 
