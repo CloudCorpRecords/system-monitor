@@ -53,5 +53,6 @@ contextBridge.exposeInMainWorld('systemMonitor', {
     openUrl: (url) => ipcRenderer.invoke('computer:openUrl', url),
     notify: (title, message) => ipcRenderer.invoke('computer:notify', { title, message }),
     emptyTrash: () => ipcRenderer.invoke('computer:emptyTrash'),
-    setVolume: (level) => ipcRenderer.invoke('computer:setVolume', level)
+    setVolume: (level) => ipcRenderer.invoke('computer:setVolume', level),
+    runSpeedTest: () => ipcRenderer.invoke('computer:runSpeedTest')
 });

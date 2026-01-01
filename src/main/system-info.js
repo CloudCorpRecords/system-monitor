@@ -1,6 +1,10 @@
 const si = require('systeminformation');
 
 class SystemInfo {
+    constructor() {
+        this.history = [];
+    }
+
     async getOverview() {
         const [cpu, mem, disk, os, battery, time] = await Promise.all([
             si.currentLoad(),
@@ -18,15 +22,22 @@ class SystemInfo {
         // Disk: Filter for the main volume (mounted at /) to avoid confused totals
         const mainDisk = disk.find(d => d.mount === '/') || disk[0];
 
+        const cpuUsage = parseFloat(cpu.currentLoad.toFixed(1));
+        const memUsage = parseFloat(((memoryUsed / mem.total) * 100).toFixed(1));
+
+        this.history.push({ time: Date.now(), cpu: cpuUsage, mem: memUsage });
+        if (this.history.length > 60) this.history.shift();
+
         return {
+            history: this.history,
             cpu: {
-                usage: cpu.currentLoad.toFixed(1),
+                usage: cpuUsage,
                 cores: cpu.cpus.length
             },
             memory: {
                 used: memoryUsed,
                 total: mem.total,
-                usedPercent: ((memoryUsed / mem.total) * 100).toFixed(1)
+                usedPercent: memUsage
             },
             disk: {
                 used: mainDisk ? mainDisk.used : 0,

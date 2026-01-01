@@ -5,13 +5,26 @@ const DependencyScanner = require('./dependency-scanner');
 const Optimizer = require('./optimizer');
 const AIAssistant = require('./ai-assistant');
 const ComputerControl = require('./computer-control');
+const AIGuardian = require('./ai-guardian');
+const AutomationManager = require('./automation-manager');
+const SecurityMonitor = require('./security-monitor');
+const CyberShield = require('./cyber-shield');
 
-let mainWindow;
 const systemInfo = new SystemInfo();
 const depScanner = new DependencyScanner();
 const optimizer = new Optimizer();
 const aiAssistant = new AIAssistant();
 const computerControl = new ComputerControl();
+const guardian = new AIGuardian(computerControl, aiAssistant);
+const automation = new AutomationManager(computerControl);
+const security = new SecurityMonitor(computerControl);
+const cyberShield = new CyberShield(computerControl);
+
+const { setupTray, updateTrayTitle } = require('./tray');
+
+let mainWindow;
+let tray;
+let tickCount = 0;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -28,6 +41,15 @@ function createWindow() {
         }
     });
 
+    // Close to Tray behavior
+    mainWindow.on('close', (event) => {
+        if (!app.isQuitting) {
+            event.preventDefault();
+            mainWindow.hide();
+        }
+        return false;
+    });
+
     // Load Vite dev server in dev, or built files in production
     if (!app.isPackaged) {
         mainWindow.loadURL('http://localhost:5173');
@@ -39,10 +61,35 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
+    tray = setupTray(mainWindow);
+
+    // Update Tray every 3 seconds
+    setInterval(async () => {
+        try {
+            const overview = await systemInfo.getOverview();
+            // Get sensors but don't fail if they error
+            let sensors = {};
+            try { sensors = await systemInfo.getSensors(); } catch (e) { }
+
+            updateTrayTitle(tray, { cpu: overview.cpu, sensors });
+            if (tickCount % 3 === 0) {
+                const procs = await systemInfo.getProcesses();
+                automation.checkRules({ cpu: overview.cpu }, procs.list || []);
+            }
+            // Security Scan (Every 30s)
+            if (tickCount % 10 === 0) {
+                security.scanNetwork();
+            }
+            guardian.check({ cpu: overview.cpu, sensors });
+            tickCount++;
+        } catch (e) { }
+    }, 3000);
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
+        } else {
+            mainWindow.show();
         }
     });
 });
@@ -212,6 +259,37 @@ ipcMain.handle('ai:executeAction', async (event, actionData) => {
             return await computerControl.notify('System Monitor', param);
         case 'SET_VOLUME':
             return await computerControl.setVolume(parseInt(param) || 50);
+        // File System Agent Actions
+        case 'LIST_DIR':
+            return await computerControl.listDir(param);
+        case 'READ_FILE':
+            return await computerControl.readFile(param);
+        case 'WRITE_FILE':
+            // Format: path|content OR JSON
+            if (param.startsWith('{')) {
+                try {
+                    const data = JSON.parse(param);
+                    return await computerControl.writeFile(data.path, data.content);
+                } catch (e) { }
+            }
+            // Fallback: split by first pipe
+            const firstPipe = param.indexOf('|');
+            if (firstPipe === -1) return { success: false, error: 'Invalid format. Use path|content' };
+            const wPath = param.substring(0, firstPipe);
+            const wContent = param.substring(firstPipe + 1);
+            return await computerControl.writeFile(wPath, wContent);
+        case 'MOVE_FILE':
+            const [src, dest] = param.split('|');
+            return await computerControl.moveFile(src, dest);
+        case 'ADD_RULE':
+            const [trig, act] = param.split('|');
+            return await automation.addRule(trig, act);
+        case 'ENABLE_ADBLOCK':
+            return await cyberShield.enableAdBlock();
+        case 'DISABLE_ADBLOCK':
+            return await cyberShield.disableAdBlock();
+        case 'SCAN_NETWORK':
+            return await cyberShield.scanLocalNetwork();
         default:
             return { success: false, error: `Unknown action: ${action}` };
     }
@@ -276,4 +354,8 @@ ipcMain.handle('computer:emptyTrash', async () => {
 
 ipcMain.handle('computer:setVolume', async (event, level) => {
     return await computerControl.setVolume(level);
+});
+
+ipcMain.handle('computer:runSpeedTest', async () => {
+    return await computerControl.runSpeedTest();
 });

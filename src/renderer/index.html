@@ -42,6 +42,10 @@
           <span class="nav-icon">🌐</span>
           <span>Network</span>
         </li>
+        <li class="nav-item" data-panel="security">
+          <span class="nav-icon">🛡️</span>
+          <span>Security</span>
+        </li>
         <li class="nav-item" data-panel="dependencies">
           <span class="nav-icon">📦</span>
           <span>Dependencies</span>
@@ -62,7 +66,7 @@
       <div class="sidebar-footer">
         <div class="system-status">
           <span class="status-dot"></span>
-          <span>System Healthy</span>
+          <span>System Healthy v1.6</span>
         </div>
       </div>
     </nav>
@@ -287,11 +291,71 @@
               <p id="net-connections">0</p>
             </div>
           </div>
+
+          <div class="speedtest-section"
+            style="margin: 24px 0; padding: 20px; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="margin: 0; margin-bottom: 4px; font-size: 1.1em;">Speed Test</h3>
+                <p style="margin: 0; font-size: 0.85em; opacity: 0.7;">Test connection quality</p>
+              </div>
+              <button id="run-speedtest" class="btn btn-primary" style="padding: 8px 16px;">Run Test 🚀</button>
+            </div>
+            <div id="speedtest-results"
+              style="margin-top: 16px; display: none; padding-top: 16px; border-top: 1px solid var(--border-color);">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; font-size: 0.9em;">
+                <div>↓ <strong id="st-download">--</strong> Mbps</div>
+                <div>↑ <strong id="st-upload">--</strong> Mbps</div>
+                <div>⚡ <strong id="st-response">--</strong> RPM</div>
+              </div>
+            </div>
+          </div>
           <div class="interfaces-list" id="interfaces-list"></div>
         </div>
       </div>
 
       <!-- Dependencies Panel -->
+      <!-- Security Panel -->
+      <div id="security" class="panel">
+        <header class="panel-header">
+          <h1>Cyber Shield 🛡️</h1>
+        </header>
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="card">
+            <h3>Sentinel AI</h3>
+            <div style="display:flex; align-items:center; color: #4ade80; margin: 10px 0;">
+              <div
+                style="width:10px; height:10px; background:#4ade80; border-radius:50%; margin-right:8px; box-shadow: 0 0 10px #4ade80;">
+              </div>
+              <strong>Active & Monitoring</strong>
+            </div>
+            <p style="opacity: 0.8; font-size: 0.9em;">Watching Network Ports & Process Spawns for anomalies.</p>
+          </div>
+
+          <div class="card">
+            <h3>System AdBlock</h3>
+            <p style="margin-bottom:15px; font-size: 0.9em; opacity: 0.8;">Block ads/trackers in all apps via
+              /etc/hosts.</p>
+            <div class="toggle-container">
+              <button id="btn-enable-adblock" class="btn btn-primary" style="width: 100%;">Enable Shield</button>
+              <button id="btn-disable-adblock" class="btn btn-danger" style="display:none; width: 100%;">Disable
+                Shield</button>
+            </div>
+            <small style="opacity:0.5; display:block; margin-top:8px; font-size: 0.8em;">* Requires Admin
+              Password</small>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <h3>Network Radar 📡</h3>
+            <button id="btn-scan-network" class="btn btn-primary">Scan LAN</button>
+          </div>
+          <pre id="network-scan-results"
+            style="margin-top:15px; padding: 15px; background: #000; border-radius: 8px; min-height:150px; color: #0f0; font-family: monospace; overflow-x: auto;">Ready to scan...</pre>
+        </div>
+      </div>
+
       <div id="dependencies" class="panel">
         <header class="panel-header">
           <h1>Dependency Manager</h1>

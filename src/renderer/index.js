@@ -11,6 +11,8 @@ class SystemMonitor {
     init() {
         this.setupNavigation();
         this.setupDependencies();
+        this.setupNetwork();
+        this.setupSecurity();
         this.setupOptimizer();
         this.setupAI();
         this.setupSettings();
@@ -149,6 +151,89 @@ class SystemMonitor {
             const disk = await window.systemMonitor.getDiskInfo();
             document.getElementById('disks-grid').innerHTML = disk.partitions.map(d => `<div class="disk-card-item"><h3>${d.mount}</h3><div class="disk-bar-container"><div class="disk-bar" style="width: ${d.usePercent}%"></div></div><div class="disk-details"><span>${this.formatBytes(d.used)} used</span><span>${this.formatBytes(d.available)} free</span></div></div>`).join('');
         } catch (err) { console.error('Disk error:', err); }
+    }
+
+    setupNetwork() {
+        const btn = document.getElementById('run-speedtest');
+        if (btn) {
+            btn.addEventListener('click', async (e) => {
+                const resultsDiv = document.getElementById('speedtest-results');
+                btn.textContent = 'Running...';
+                btn.disabled = true;
+                resultsDiv.style.display = 'none';
+
+                try {
+                    const result = await window.systemMonitor.runSpeedTest();
+                    if (result.success) {
+                        document.getElementById('st-download').textContent = result.download;
+                        document.getElementById('st-upload').textContent = result.upload;
+                        document.getElementById('st-response').textContent = result.responsiveness;
+                        resultsDiv.style.display = 'block';
+                    } else {
+                        console.error('Speed Test Failed: ' + result.error);
+                        btn.textContent = 'Failed';
+                    }
+                } catch (err) {
+                    console.error('Error: ' + err.message);
+                    btn.textContent = 'Error';
+                } finally {
+                    if (btn.textContent === 'Running...') btn.textContent = 'Run Test 🚀';
+                    else setTimeout(() => btn.textContent = 'Run Test 🚀', 2000);
+                    btn.disabled = false;
+                }
+            });
+        }
+    }
+
+    setupSecurity() {
+        const btnEnable = document.getElementById('btn-enable-adblock');
+        const btnDisable = document.getElementById('btn-disable-adblock');
+        const btnScan = document.getElementById('btn-scan-network');
+        const scanResults = document.getElementById('network-scan-results');
+
+        if (btnEnable) btnEnable.addEventListener('click', async () => {
+            btnEnable.textContent = 'Securing... (Check for popup)';
+            btnEnable.disabled = true;
+            const res = await window.systemMonitor.executeAIAction({ action: 'ENABLE_ADBLOCK' });
+            if (res.success) {
+                alert('Shield Enabled!');
+                btnEnable.style.display = 'none';
+                btnDisable.style.display = 'block';
+            } else {
+                alert('Failed: ' + res.error);
+                btnEnable.textContent = 'Enable Shield';
+                btnEnable.disabled = false;
+            }
+        });
+
+        if (btnDisable) btnDisable.addEventListener('click', async () => {
+            btnDisable.textContent = 'Disabling...';
+            btnDisable.disabled = true;
+            const res = await window.systemMonitor.executeAIAction({ action: 'DISABLE_ADBLOCK' });
+            if (res.success) {
+                alert('Shield Disabled.');
+                btnDisable.style.display = 'none';
+                btnEnable.style.display = 'block';
+                btnEnable.textContent = 'Enable Shield';
+                btnEnable.disabled = false;
+            } else {
+                alert('Failed: ' + res.error);
+                btnDisable.textContent = 'Disable Shield';
+                btnDisable.disabled = false;
+            }
+        });
+
+        if (btnScan) btnScan.addEventListener('click', async () => {
+            if (scanResults) scanResults.textContent = 'Scanning local network... please wait...';
+            const res = await window.systemMonitor.executeAIAction({ action: 'SCAN_NETWORK' });
+            if (scanResults) {
+                if (res.success) {
+                    scanResults.textContent = res.scan || 'No devices found.';
+                } else {
+                    scanResults.textContent = 'Scan failed: ' + res.error;
+                }
+            }
+        });
     }
 
     async updateNetwork() {
@@ -507,5 +592,13 @@ class SystemMonitor {
     }
 }
 
-const app = new SystemMonitor();
+try {
+    const app = new SystemMonitor();
+} catch (err) {
+    document.body.innerHTML = `<div style="padding:20px; color:red; font-family:monospace">
+        <h1>Startup Error</h1>
+        <pre>${err.stack}</pre>
+    </div>`;
+    console.error(err);
+}
 

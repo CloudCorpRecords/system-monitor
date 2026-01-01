@@ -340,6 +340,73 @@ class ComputerControl {
             return { success: false, error: err.message };
         }
     }
+    async runSpeedTest() {
+        try {
+            // macOS Monterey and later include 'networkQuality' tool
+            // -c produces JSON output
+            const { stdout } = await execAsync('networkQuality -c');
+            try {
+                const result = JSON.parse(stdout);
+                return {
+                    success: true,
+                    download: (result.dl_throughput / 1000000).toFixed(1), // Mbps
+                    upload: (result.ul_throughput / 1000000).toFixed(1),   // Mbps
+                    responsiveness: result.responsiveness
+                };
+            } catch (parseErr) {
+                // Fallback for raw output or older versions
+                return { success: false, error: 'Could not parse network quality results' };
+            }
+        } catch (err) {
+            return { success: false, error: 'Speed test failed (Requires macOS Monterey+)' };
+        }
+    }
+    // ==================== FILE SYSTEM AGENT ====================
+
+    async listDir(dirPath) {
+        try {
+            const files = await fs.readdir(dirPath, { withFileTypes: true });
+            return {
+                success: true,
+                files: files.map(f => ({
+                    name: f.name,
+                    type: f.isDirectory() ? 'dir' : 'file',
+                    path: path.join(dirPath, f.name)
+                })).slice(0, 100) // Safety limit for context window
+            };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }
+
+    async readFile(filePath) {
+        try {
+            const content = await fs.readFile(filePath, 'utf8');
+            return { success: true, content };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }
+
+    async writeFile(filePath, content) {
+        try {
+            const dir = path.dirname(filePath);
+            await fs.mkdir(dir, { recursive: true });
+            await fs.writeFile(filePath, content, 'utf8');
+            return { success: true, message: `Wrote to ${filePath}` };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }
+
+    async moveFile(source, dest) {
+        try {
+            await fs.rename(source, dest);
+            return { success: true, message: `Moved ${source} to ${dest}` };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+    }
 }
 
 module.exports = ComputerControl;

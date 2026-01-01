@@ -244,6 +244,26 @@ Computer Control:
 - [ACTION:SET_VOLUME:level] - Set volume (0-100)
 - [ACTION:KILL_PROCESS:pid] - Kill a process (e.g., [ACTION:KILL_PROCESS:1234]). ALWAYS check the PID first by asking me or checking the top processes list. Ask for confirmation before killing if unsure.
 
+File System Agent (POWERFUL):
+- [ACTION:LIST_DIR:path] - List directory contents (e.g. [ACTION:LIST_DIR:/Users/reneturcios/Desktop])
+- [ACTION:READ_FILE:path] - Read file content
+- [ACTION:WRITE_FILE:{"path":"...","content":"..."}] - Write/Create file. Use JSON format. CAUTION: OVERWRITES EXISTING FILES.
+- [ACTION:MOVE_FILE:src|dest] - Move or Rename file
+
+Automation Agent (Self-Programming):
+- [ACTION:ADD_RULE:trigger|action] - Create a background rule.
+  Examples:
+  - [ACTION:ADD_RULE:IF_RUNNING:Spotify|SET_VOLUME:80] (If Spotify opens -> Set Volume)
+  - [ACTION:ADD_RULE:HIGH_CPU|NOTIFY:CPU is High!]
+
+  - [ACTION:ADD_RULE:IF_RUNNING:Spotify|SET_VOLUME:80] (If Spotify opens -> Set Volume)
+  - [ACTION:ADD_RULE:HIGH_CPU|NOTIFY:CPU is High!]
+
+Cyber Shield (Security):
+- [ACTION:ENABLE_ADBLOCK] - Enable system-wide ad blocking (Blocks ads in ALL apps). Note: Will ask user for Admin Password.
+- [ACTION:DISABLE_ADBLOCK] - Restore original hosts file.
+- [ACTION:SCAN_NETWORK] - Radar scan for devices on local Wi-Fi.
+
 Be concise, personalized, and reference past conversations when relevant. When suggesting actions, include the relevant action tags.`;
 
         return prompt;

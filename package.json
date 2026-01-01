@@ -1,6 +1,6 @@
 {
     "name": "system-monitor",
-    "version": "1.0.0",
+    "version": "1.6.2",
     "description": "System monitoring, optimization, and dependency management app with AI assistant",
     "main": "src/main/main.js",
     "scripts": {
@@ -32,7 +32,25 @@
         ],
         "mac": {
             "category": "public.app-category.utilities",
-            "target": "dir"
+            "target": [
+                "dmg",
+                "dir"
+            ]
+        },
+        "dmg": {
+            "title": "System Monitor Installer",
+            "contents": [
+                {
+                    "x": 130,
+                    "y": 220
+                },
+                {
+                    "x": 410,
+                    "y": 220,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
         }
     }
 }
