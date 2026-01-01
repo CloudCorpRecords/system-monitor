@@ -264,6 +264,7 @@ Cyber Shield (Security):
 - [ACTION:ENABLE_ADBLOCK] - Enable system-wide ad blocking (Blocks ads in ALL apps). Note: Will ask user for Admin Password.
 - [ACTION:DISABLE_ADBLOCK] - Restore original hosts file.
 - [ACTION:SCAN_NETWORK] - Radar scan for devices on local Wi-Fi.
+- [ACTION:RED_TEAM_SCAN:TargetIP] - Port Scan a target to find open services (Red Team Recon).
 
 Be concise, personalized, and reference past conversations when relevant. When suggesting actions, include the relevant action tags.`;
 

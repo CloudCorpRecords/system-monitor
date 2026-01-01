@@ -10,6 +10,7 @@ const AutomationManager = require('./automation-manager');
 const SecurityMonitor = require('./security-monitor');
 const CyberShield = require('./cyber-shield');
 const Uninstaller = require('./uninstaller');
+const RedTeam = require('./red-team');
 
 const systemInfo = new SystemInfo();
 const depScanner = new DependencyScanner();
@@ -21,6 +22,7 @@ const automation = new AutomationManager(computerControl);
 const security = new SecurityMonitor(computerControl);
 const cyberShield = new CyberShield(computerControl);
 const uninstaller = new Uninstaller();
+const redTeam = new RedTeam();
 
 const { setupTray, updateTrayTitle } = require('./tray');
 
@@ -306,6 +308,8 @@ ipcMain.handle('ai:executeAction', async (event, actionData) => {
             return await cyberShield.disableAdBlock();
         case 'SCAN_NETWORK':
             return await cyberShield.scanLocalNetwork();
+        case 'RED_TEAM_SCAN':
+            return await redTeam.scanTarget(param);
         default:
             return { success: false, error: `Unknown action: ${action}` };
     }
