@@ -258,6 +258,31 @@ class SystemMonitor {
                 }
             }
         });
+
+        const btnRedTeamAuto = document.getElementById('btn-red-team-auto');
+        if (btnRedTeamAuto) btnRedTeamAuto.addEventListener('click', async () => {
+            if (redResults) redResults.textContent = "Initiating AUTO RECON... \n1. Establishing Network Baseline (ARP)...\n2. Identifying live hosts...\n3. Scanning for services (This may take 40s+)...";
+
+            const res = await window.systemMonitor.executeAIAction({ action: 'RED_TEAM_SCAN', param: 'AUTO' });
+
+            if (res.type === 'AUTO' && res.report) {
+                let out = `[+] AUTO RECON COMPLETE. Found ${res.report.length} Vulnerable Targets.\n`;
+                out += "=================================================\n";
+                res.report.forEach(t => {
+                    out += `TARGET: ${t.host}\n`;
+                    t.openPorts.forEach(p => {
+                        const banner = p.banner ? ` | Service: ${p.banner}` : '';
+                        out += `   -> Port ${p.port} [OPEN]${banner}\n`;
+                    });
+                    out += "-------------------------------------------------\n";
+                });
+                if (res.report.length === 0) out += "Baseline Scan Complete: No accessible targets with common ports found.";
+
+                if (redResults) redResults.textContent = out;
+            } else {
+                if (redResults) redResults.textContent = 'Auto Scan failed: ' + (res.error || 'Unknown error');
+            }
+        });
     }
 
     async updateNetwork() {

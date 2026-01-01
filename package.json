@@ -1,6 +1,6 @@
 {
     "name": "system-monitor",
-    "version": "1.7.1",
+    "version": "1.7.2",
     "description": "System monitoring, optimization, and dependency management app with AI assistant",
     "main": "src/main/main.js",
     "scripts": {

@@ -309,6 +309,13 @@ ipcMain.handle('ai:executeAction', async (event, actionData) => {
         case 'SCAN_NETWORK':
             return await cyberShield.scanLocalNetwork();
         case 'RED_TEAM_SCAN':
+            if (param === 'AUTO') {
+                const netRes = await cyberShield.scanLocalNetwork();
+                const hosts = netRes.hosts || [];
+                const validHosts = hosts.filter(h => !h.ip.endsWith('.255') && h.ip !== '224.0.0.251');
+                const report = await redTeam.scanSubnet(validHosts);
+                return { success: true, report, type: 'AUTO' };
+            }
             return await redTeam.scanTarget(param);
         default:
             return { success: false, error: `Unknown action: ${action}` };

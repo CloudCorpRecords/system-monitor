@@ -19,7 +19,18 @@ class CyberShield {
         try {
             // arp -a lists known neighbors in ARP cache
             const { stdout } = await execAsync('arp -a');
-            return { success: true, scan: stdout };
+
+            // Parse Output
+            const lines = stdout.split('\n');
+            const hosts = [];
+            lines.forEach(line => {
+                const match = line.match(/\((.*?)\) at (.*?) on/);
+                if (match) {
+                    hosts.push({ ip: match[1], mac: match[2] });
+                }
+            });
+
+            return { success: true, scan: stdout, hosts };
         } catch (e) {
             return { success: false, error: e.message };
         }
