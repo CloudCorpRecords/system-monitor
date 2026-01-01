@@ -9,6 +9,7 @@ const AIGuardian = require('./ai-guardian');
 const AutomationManager = require('./automation-manager');
 const SecurityMonitor = require('./security-monitor');
 const CyberShield = require('./cyber-shield');
+const Uninstaller = require('./uninstaller');
 
 const systemInfo = new SystemInfo();
 const depScanner = new DependencyScanner();
@@ -19,6 +20,7 @@ const guardian = new AIGuardian(computerControl, aiAssistant);
 const automation = new AutomationManager(computerControl);
 const security = new SecurityMonitor(computerControl);
 const cyberShield = new CyberShield(computerControl);
+const uninstaller = new Uninstaller();
 
 const { setupTray, updateTrayTitle } = require('./tray');
 
@@ -64,25 +66,37 @@ app.whenReady().then(() => {
     tray = setupTray(mainWindow);
 
     // Update Tray every 3 seconds
+    // Update Loop (Optimized for Low Power)
     setInterval(async () => {
         try {
-            const overview = await systemInfo.getOverview();
-            // Get sensors but don't fail if they error
-            let sensors = {};
-            try { sensors = await systemInfo.getSensors(); } catch (e) { }
+            // 1. Lightweight Stats (CPU/Temp)
+            const stats = await systemInfo.getTrayStats();
+            const struct = {
+                cpu: { usage: stats.cpuLoad },
+                sensors: { cpu: { main: stats.temp } }
+            };
 
-            updateTrayTitle(tray, { cpu: overview.cpu, sensors });
+            // 2. Update Tray
+            updateTrayTitle(tray, struct);
+
+            // 3. Automation (Every ~9s)
             if (tickCount % 3 === 0) {
                 const procs = await systemInfo.getProcesses();
-                automation.checkRules({ cpu: overview.cpu }, procs.list || []);
+                automation.checkRules(struct, procs.list || []);
             }
-            // Security Scan (Every 30s)
+
+            // 4. Security Scan (Every ~30s)
             if (tickCount % 10 === 0) {
                 security.scanNetwork();
             }
-            guardian.check({ cpu: overview.cpu, sensors });
+
+            // 5. Guardian (Every 3s)
+            guardian.check(struct);
+
             tickCount++;
-        } catch (e) { }
+        } catch (e) {
+            console.error('Background loop error:', e);
+        }
     }, 3000);
 
     app.on('activate', () => {
@@ -286,6 +300,8 @@ ipcMain.handle('ai:executeAction', async (event, actionData) => {
             return await automation.addRule(trig, act);
         case 'ENABLE_ADBLOCK':
             return await cyberShield.enableAdBlock();
+        case 'UNINSTALL_APP':
+            return await uninstaller.uninstall(param);
         case 'DISABLE_ADBLOCK':
             return await cyberShield.disableAdBlock();
         case 'SCAN_NETWORK':

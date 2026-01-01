@@ -196,6 +196,34 @@ class SystemInfo {
             top: topProcesses
         };
     }
+    async getTrayStats() {
+        const load = await si.currentLoad();
+
+        // Lightweight temp check
+        let temp = 0;
+        const siTemp = await si.cpuTemperature();
+        if (siTemp.main && siTemp.main !== -1) {
+            temp = siTemp.main;
+        } else {
+            // Fallback for M1/M2/M3
+            try {
+                const { exec } = require('child_process');
+                const { promisify } = require('util');
+                const execAsync = promisify(exec);
+                const { stdout } = await execAsync('pmset -g therm');
+                if (stdout.includes('No thermal warning')) temp = 45;
+                else if (stdout.includes('Moderate')) temp = 70;
+                else if (stdout.includes('Heavy')) temp = 90;
+                else temp = 40;
+            } catch (e) { temp = 0; }
+        }
+
+        return {
+            cpuLoad: load.currentLoad.toFixed(1),
+            temp: temp
+        };
+    }
+
     async getSensors() {
         // Try standard sensors first
         let [temp, graphics] = await Promise.all([

@@ -242,7 +242,8 @@ Computer Control:
 - [ACTION:RUN_CMD:command] - Run a terminal command
 - [ACTION:NOTIFY:message] - Show a notification
 - [ACTION:SET_VOLUME:level] - Set volume (0-100)
-- [ACTION:KILL_PROCESS:pid] - Kill a process (e.g., [ACTION:KILL_PROCESS:1234]). ALWAYS check the PID first by asking me or checking the top processes list. Ask for confirmation before killing if unsure.
+- [ACTION:KILL_PROCESS:pid] - Kill a process
+- [ACTION:UNINSTALL_APP:AppName] - Uninstall App & clean junk files (Moves to Trash). (e.g. [ACTION:UNINSTALL_APP:Discord])
 
 File System Agent (POWERFUL):
 - [ACTION:LIST_DIR:path] - List directory contents (e.g. [ACTION:LIST_DIR:/Users/reneturcios/Desktop])
