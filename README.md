@@ -16,9 +16,10 @@
   - "Clean up my system"
   - "Check for outdated packages"
   - "Tell me what's using the most RAM"
-- **�️ Cyber Shield**: System-wide ad blocking, network scanning, and process monitoring.
+- **🛡️ Cyber Shield**: System-wide ad blocking, network scanning, and process monitoring.
+- **🕵️‍♂️ Red Team Recon**: Auto-discover targets on LAN and scan for vulnerabilities (Port Scan + Service Banner Grabbing).
 - **⚡️ Agentic Autonomy**: The AI proactively manages your system with self-created rules (e.g., "When I open Code, turn on Do Not Disturb").
-- **�🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
+- **🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
 - **📦 Auto-Setup**: "Quick Setup" button automatically installs Ollama and downloads models.
 
 ## 🚀 Getting Started
