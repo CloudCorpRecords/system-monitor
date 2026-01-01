@@ -415,7 +415,8 @@ Be concise, personalized, and reference past conversations when relevant. When s
             const data = await response.json();
             return { running: true, models: data.models?.map(m => m.name) || [] };
         } catch (err) {
-            return { running: false, models: [] };
+            console.error('Ollama check failed:', err.message);
+            return { running: false, models: [], error: err.message };
         }
     }
 }

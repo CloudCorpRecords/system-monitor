@@ -37,6 +37,9 @@ class SystemMonitor {
     }
 
     startUpdates() {
+        this.setupSettings();
+        this.setupUpdates();
+
         this.updateCurrentPanel();
         this.updateInterval = setInterval(() => this.updateCurrentPanel(), 2000);
     }
@@ -472,7 +475,8 @@ class SystemMonitor {
             badge.textContent = 'Gemini'; badge.style.background = 'rgba(66, 133, 244, 0.2)'; badge.style.color = '#4285f4';
         } else if (settings.provider === 'ollama') {
             const status = await window.systemMonitor.checkOllama();
-            badge.textContent = status.running ? `Ollama (${settings.ollamaModel})` : 'Ollama (offline)';
+            console.log('Ollama Status Check:', status);
+            badge.textContent = status.running ? `Ollama (${settings.ollamaModel})` : `Ollama (offline: ${status.error || 'unknown'})`;
             badge.style.background = status.running ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
             badge.style.color = status.running ? '#10b981' : '#ef4444';
         } else {
@@ -672,7 +676,74 @@ class SystemMonitor {
         const d = Math.floor(seconds / 86400), h = Math.floor((seconds % 86400) / 3600), m = Math.floor((seconds % 3600) / 60);
         return d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
     }
+    setupUpdates() {
+        const btn = document.getElementById('check-updates-btn');
+        const status = document.getElementById('update-status');
+        const progressContainer = document.getElementById('update-progress-container');
+        const progressBar = document.getElementById('update-progress-bar');
+        const progressText = document.getElementById('update-progress-text');
+
+        if (btn) {
+            btn.addEventListener('click', () => {
+                btn.disabled = true;
+                btn.textContent = 'Checking...';
+                status.textContent = 'Checking for updates...';
+                window.systemMonitor.checkForUpdates();
+            });
+        }
+
+        window.systemMonitor.onUpdateStatus((data) => {
+            console.log('Update status:', data);
+            if (!status || !btn) return;
+
+            switch (data.status) {
+                case 'checking':
+                    status.textContent = 'Checking for updates...';
+                    break;
+                case 'available':
+                    status.textContent = `Update available: ${data.info.version}`;
+                    btn.textContent = 'Download Update';
+                    btn.disabled = false;
+                    btn.onclick = () => {
+                        this.log('Downloading update...', 'info');
+                        btn.disabled = true;
+                        btn.textContent = 'Downloading...';
+                        progressContainer.classList.remove('hidden');
+                        window.systemMonitor.downloadUpdate();
+                    };
+                    break;
+                case 'not-available':
+                    status.textContent = 'You are on the latest version.';
+                    btn.disabled = false;
+                    btn.textContent = 'Check for Updates';
+                    setTimeout(() => status.textContent = 'Current version', 3000);
+                    break;
+                case 'downloaded':
+                    status.textContent = 'Update downloaded!';
+                    btn.textContent = 'Restart & Install';
+                    btn.disabled = false;
+                    btn.onclick = () => window.systemMonitor.installUpdate();
+                    break;
+                case 'error':
+                    status.textContent = `Error: ${data.error}`;
+                    btn.disabled = false;
+                    btn.textContent = 'Check for Updates';
+                    break;
+                case 'dev-mode':
+                    status.textContent = 'Updates disabled in dev mode';
+                    btn.disabled = false;
+                    btn.textContent = 'Check for Updates';
+                    break;
+            }
+        });
+
+        window.systemMonitor.onDownloadProgress((data) => {
+            if (progressBar) progressBar.style.width = `${data.percent}%`;
+            if (progressText) progressText.textContent = `Downloading: ${Math.floor(data.percent)}% (${(data.transferred / 1000000).toFixed(1)} MB)`;
+        });
+    }
 }
+
 
 try {
     const app = new SystemMonitor();

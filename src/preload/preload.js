@@ -57,5 +57,12 @@ contextBridge.exposeInMainWorld('systemMonitor', {
     runSpeedTest: () => ipcRenderer.invoke('computer:runSpeedTest'),
 
     // Cyber Shield
-    searchBlocklist: (query) => ipcRenderer.invoke('cyber-shield:search-blocklist', query)
+    searchBlocklist: (query) => ipcRenderer.invoke('cyber-shield:search-blocklist', query),
+
+    // Auto-Updater
+    checkForUpdates: () => ipcRenderer.invoke('update:check'),
+    downloadUpdate: () => ipcRenderer.invoke('update:download'),
+    installUpdate: () => ipcRenderer.invoke('update:install'),
+    onUpdateStatus: (callback) => ipcRenderer.on('update:status', (event, value) => callback(value)),
+    onDownloadProgress: (callback) => ipcRenderer.on('update:download-progress', (event, value) => callback(value))
 });
