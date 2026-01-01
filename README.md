@@ -1,0 +1,72 @@
+# System Monitor AI 🖥️ 🤖
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
+
+**System Monitor AI** is a next-generation system utility for macOS that combines real-time hardware monitoring with a powerful, agentic AI assistant. Unlike traditional monitors, this app allows you to **talk to your computer** to check stats, optimize performance, and perform system tasks.
+
+## ✨ Features
+
+- **📊 Real-Time Monitoring**: Beautiful, animated dashboards for CPU, Memory, Disk, Network, and Battery.
+- **🤖 Integrated AI Assistant**: 
+  - **Local Privacy**: One-click setup for **Ollama** (runs 100% offline).
+  - **Cloud Power**: Optional integration with Google Gemini.
+- **⚡️ Computer Control**: Ask the AI to:
+  - "Open Safari"
+  - "Clean up my system"
+  - "Check for outdated packages"
+  - "Tell me what's using the most RAM"
+- **🛠️ Optimization Tools**: Built-in tools to free RAM, clear caches, and manage dependencies (Homebrew, npm, pip).
+- **📦 Auto-Setup**: "Quick Setup" button automatically installs Ollama and downloads models.
+
+## 🚀 Getting Started
+
+### Prerequisites
+- macOS (Apple Silicon recommended for local AI)
+- Node.js (v18 or higher)
+- [GitHub CLI](https://cli.github.com/) (optional, for easier cloning)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/CloudCorpRecords/system-monitor.git
+   cd system-monitor
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run in development mode**
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production**
+   ```bash
+   npm run build
+   ```
+   This creates a standalone `.app` in the `release/mac-arm64` folder.
+
+## 🤝 Contributing
+
+We love contributions! Whether it's fixing bugs, improving the UI, or adding new AI capabilities, your help is welcome.
+
+1. **Fork the Project** (Click the 'Fork' button top right)
+2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+##  Acknowledgments
+- Built with [Electron](https://www.electronjs.org/) and [Vite](https://vitejs.dev/)
+- Charts by [Chart.js](https://www.chartjs.org/)
+- AI powered by [Ollama](https://ollama.com/) & [Google Gemini](https://deepmind.google/technologies/gemini/)
