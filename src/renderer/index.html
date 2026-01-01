@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://generativelanguage.googleapis.com http://localhost:11434">
+  <title>System Monitor</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">⚡</div>
+          <span>System Monitor</span>
+        </div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active" data-panel="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </li>
+        <li class="nav-item" data-panel="cpu">
+          <span class="nav-icon">🔲</span>
+          <span>CPU</span>
+        </li>
+        <li class="nav-item" data-panel="memory">
+          <span class="nav-icon">💾</span>
+          <span>Memory</span>
+        </li>
+        <li class="nav-item" data-panel="disk">
+          <span class="nav-icon">💿</span>
+          <span>Storage</span>
+        </li>
+        <li class="nav-item" data-panel="network">
+          <span class="nav-icon">🌐</span>
+          <span>Network</span>
+        </li>
+        <li class="nav-item" data-panel="dependencies">
+          <span class="nav-icon">📦</span>
+          <span>Dependencies</span>
+        </li>
+        <li class="nav-item" data-panel="optimizer">
+          <span class="nav-icon">🚀</span>
+          <span>Optimizer</span>
+        </li>
+        <li class="nav-item" data-panel="ai-chat">
+          <span class="nav-icon">🤖</span>
+          <span>AI Assistant</span>
+        </li>
+        <li class="nav-item" data-panel="settings">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span>System Healthy</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Dashboard Panel -->
+      <div id="dashboard" class="panel active">
+        <header class="panel-header">
+          <h1>System Overview</h1>
+          <div class="header-info">
+            <span id="hostname" class="hostname"></span>
+            <span id="uptime" class="uptime"></span>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="stat-card cpu-card">
+            <div class="stat-header">
+              <span class="stat-icon">🔲</span>
+              <span class="stat-title">CPU Usage</span>
+            </div>
+            <div class="gauge-container">
+              <svg class="gauge" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="45" />
+                <circle class="gauge-fill cpu-gauge" cx="50" cy="50" r="45" id="cpu-gauge" />
+              </svg>
+              <div class="gauge-value" id="cpu-value">0%</div>
+            </div>
+            <div class="stat-detail" id="cpu-cores"></div>
+          </div>
+
+          <div class="stat-card memory-card">
+            <div class="stat-header">
+              <span class="stat-icon">💾</span>
+              <span class="stat-title">Memory</span>
+            </div>
+            <div class="gauge-container">
+              <svg class="gauge" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="45" />
+                <circle class="gauge-fill memory-gauge" cx="50" cy="50" r="45" id="memory-gauge" />
+              </svg>
+              <div class="gauge-value" id="memory-value">0%</div>
+            </div>
+            <div class="stat-detail" id="memory-detail"></div>
+          </div>
+
+          <div class="stat-card disk-card">
+            <div class="stat-header">
+              <span class="stat-icon">💿</span>
+              <span class="stat-title">Storage</span>
+            </div>
+            <div class="gauge-container">
+              <svg class="gauge" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="45" />
+                <circle class="gauge-fill disk-gauge" cx="50" cy="50" r="45" id="disk-gauge" />
+              </svg>
+              <div class="gauge-value" id="disk-value">0%</div>
+            </div>
+            <div class="stat-detail" id="disk-detail"></div>
+          </div>
+
+          <div class="stat-card battery-card">
+            <div class="stat-header">
+              <span class="stat-icon">🔋</span>
+              <span class="stat-title">Battery</span>
+            </div>
+            <div class="gauge-container">
+              <svg class="gauge" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="45" />
+                <circle class="gauge-fill battery-gauge" cx="50" cy="50" r="45" id="battery-gauge" />
+              </svg>
+              <div class="gauge-value" id="battery-value">N/A</div>
+            </div>
+            <div class="stat-detail" id="battery-detail"></div>
+          </div>
+        </div>
+
+        <div class="processes-section">
+          <h2>Top Processes</h2>
+          <div class="processes-table">
+            <div class="table-header">
+              <span>Name</span>
+              <span>CPU</span>
+              <span>Memory</span>
+              <span>Status</span>
+            </div>
+            <div class="table-body" id="processes-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CPU Panel -->
+      <div id="cpu" class="panel">
+        <header class="panel-header">
+          <h1>CPU Details</h1>
+        </header>
+        <div class="detail-content">
+          <div class="info-cards">
+            <div class="info-card">
+              <h3>Processor</h3>
+              <p id="cpu-brand">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Speed</h3>
+              <p id="cpu-speed">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Cores</h3>
+              <p id="cpu-cores-detail">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Temperature</h3>
+              <p id="cpu-temp">Loading...</p>
+            </div>
+          </div>
+          <div class="cores-grid" id="cores-grid"></div>
+        </div>
+      </div>
+
+      <!-- Memory Panel -->
+      <div id="memory" class="panel">
+        <header class="panel-header">
+          <h1>Memory Details</h1>
+        </header>
+        <div class="detail-content">
+          <div class="memory-overview">
+            <div class="memory-bar-container">
+              <div class="memory-bar" id="memory-bar-fill"></div>
+            </div>
+            <div class="memory-labels">
+              <span id="memory-used-label">Used: 0 GB</span>
+              <span id="memory-total-label">Total: 0 GB</span>
+            </div>
+          </div>
+          <div class="info-cards">
+            <div class="info-card">
+              <h3>Total RAM</h3>
+              <p id="ram-total">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Available</h3>
+              <p id="ram-available">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Swap Used</h3>
+              <p id="swap-used">Loading...</p>
+            </div>
+            <div class="info-card">
+              <h3>Swap Total</h3>
+              <p id="swap-total">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disk Panel -->
+      <div id="disk" class="panel">
+        <header class="panel-header">
+          <h1>Storage Details</h1>
+        </header>
+        <div class="detail-content">
+          <div class="disks-grid" id="disks-grid"></div>
+        </div>
+      </div>
+
+      <!-- Network Panel -->
+      <div id="network" class="panel">
+        <header class="panel-header">
+          <h1>Network Details</h1>
+        </header>
+        <div class="detail-content">
+          <div class="network-stats">
+            <div class="info-card download-card">
+              <h3>Download</h3>
+              <p id="net-download">0 KB/s</p>
+            </div>
+            <div class="info-card upload-card">
+              <h3>Upload</h3>
+              <p id="net-upload">0 KB/s</p>
+            </div>
+            <div class="info-card">
+              <h3>Active Connections</h3>
+              <p id="net-connections">0</p>
+            </div>
+          </div>
+          <div class="interfaces-list" id="interfaces-list"></div>
+        </div>
+      </div>
+
+      <!-- Dependencies Panel -->
+      <div id="dependencies" class="panel">
+        <header class="panel-header">
+          <h1>Dependency Manager</h1>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="scan-all-deps">Scan All</button>
+          </div>
+        </header>
+        <div class="detail-content">
+          <div class="deps-tabs">
+            <button class="deps-tab active" data-type="npm">npm</button>
+            <button class="deps-tab" data-type="pip">pip</button>
+            <button class="deps-tab" data-type="brew">Homebrew</button>
+          </div>
+          <div class="deps-content">
+            <div class="deps-summary">
+              <span id="deps-total">0 packages</span>
+              <span id="deps-outdated" class="outdated-badge">0 outdated</span>
+            </div>
+            <div class="deps-actions">
+              <button class="btn btn-secondary" id="update-all-deps">Update All Outdated</button>
+            </div>
+            <div class="deps-list" id="deps-list">
+              <p class="deps-placeholder">Click "Scan All" to discover packages</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optimizer Panel -->
+      <div id="optimizer" class="panel">
+        <header class="panel-header">
+          <h1>System Optimizer</h1>
+        </header>
+        <div class="detail-content">
+          <div class="optimizer-cards">
+            <div class="optimizer-card">
+              <div class="optimizer-icon">🗑️</div>
+              <h3>Clear Cache</h3>
+              <p id="cache-size">Calculating...</p>
+              <button class="btn btn-primary" id="clear-cache-btn">Clear Cache</button>
+            </div>
+            <div class="optimizer-card">
+              <div class="optimizer-icon">💨</div>
+              <h3>Free Memory</h3>
+              <p>Release inactive memory</p>
+              <button class="btn btn-secondary" id="free-memory-btn">Optimize Memory</button>
+            </div>
+            <div class="optimizer-card">
+              <div class="optimizer-icon">🚀</div>
+              <h3>Startup Items</h3>
+              <p id="startup-count">Loading...</p>
+              <button class="btn btn-secondary" id="view-startup-btn">View Items</button>
+            </div>
+          </div>
+          <div class="startup-list hidden" id="startup-list"></div>
+          <div class="optimizer-log" id="optimizer-log"></div>
+        </div>
+      </div>
+
+      <!-- AI Chat Panel -->
+      <div id="ai-chat" class="panel">
+        <header class="panel-header">
+          <h1>AI Assistant</h1>
+          <div class="header-info">
+            <span id="memory-stats" class="memory-badge" title="AI Memory">🧠 <span id="memory-count">0</span>
+              memories</span>
+            <span id="ai-provider-badge" class="interface-type">Not configured</span>
+            <button class="btn btn-sm btn-secondary" id="clear-memory-btn" title="Clear AI Memory">Clear Memory</button>
+          </div>
+        </header>
+        <div class="detail-content">
+          <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+              <div class="chat-welcome">
+                <div class="chat-welcome-icon">🤖</div>
+                <h3>AI System Assistant</h3>
+                <p>Ask me to analyze your system, optimize performance, or update dependencies.</p>
+                <div class="quick-actions">
+                  <button class="btn btn-secondary btn-sm"
+                    onclick="app.quickChat('Analyze my system performance')">Analyze System</button>
+                  <button class="btn btn-secondary btn-sm" onclick="app.quickChat('What can be optimized?')">Suggest
+                    Optimizations</button>
+                  <button class="btn btn-secondary btn-sm" onclick="app.quickChat('Check my dependencies')">Check
+                    Dependencies</button>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input type="text" id="chat-input" placeholder="Ask the AI to help optimize your system..." />
+              <button class="btn btn-primary" id="chat-send-btn">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div id="settings" class="panel">
+        <header class="panel-header">
+          <h1>Settings</h1>
+        </header>
+        <div class="detail-content">
+          <!-- Quick Setup Section -->
+          <div class="settings-section" id="quick-setup-section">
+            <h2>🚀 Quick Setup</h2>
+            <div class="settings-card quick-setup-card">
+              <div class="quick-setup-content">
+                <div class="quick-setup-icon">🤖</div>
+                <h3>Set Up Local AI Assistant</h3>
+                <p>One click to install everything you need for offline AI that can control your computer.</p>
+                <button class="btn btn-primary btn-large" id="quick-setup-btn">
+                  <span class="btn-text">⚡ Quick Setup</span>
+                </button>
+                <div id="setup-progress" class="setup-progress hidden">
+                  <div class="setup-step-item" id="setup-step-1">
+                    <span class="step-icon">⏳</span>
+                    <span class="step-text">Installing Ollama...</span>
+                  </div>
+                  <div class="setup-step-item" id="setup-step-2">
+                    <span class="step-icon">⏳</span>
+                    <span class="step-text">Starting server...</span>
+                  </div>
+                  <div class="setup-step-item" id="setup-step-3">
+                    <span class="step-icon">⏳</span>
+                    <span class="step-text">Downloading AI model...</span>
+                  </div>
+                </div>
+                <div id="setup-status" class="setup-status"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Provider Section -->
+          <div class="settings-section">
+            <h2>AI Provider</h2>
+            <div class="settings-card">
+              <div class="setting-row">
+                <label>Provider</label>
+                <select id="ai-provider-select">
+                  <option value="gemini">Google Gemini (Cloud)</option>
+                  <option value="ollama">Ollama (Local - Recommended)</option>
+                </select>
+              </div>
+              <div class="setting-row" id="gemini-settings">
+                <label>Gemini API Key</label>
+                <input type="password" id="gemini-key-input" placeholder="Enter your Gemini API key" />
+                <p class="setting-hint">Get your API key from <a href="https://aistudio.google.com/apikey"
+                    target="_blank">Google AI Studio</a></p>
+              </div>
+              <div class="setting-row hidden" id="ollama-settings">
+                <div class="ollama-status-bar" id="ollama-status-bar">
+                  <span id="ollama-install-status">Checking...</span>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="save-ai-settings">Save Settings</button>
+            </div>
+          </div>
+
+          <!-- Installed Models Section -->
+          <div class="settings-section" id="models-section">
+            <h2>Installed Models</h2>
+            <div class="settings-card">
+              <div id="models-list">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="./index.js"></script>
+</body>
+
+</html>

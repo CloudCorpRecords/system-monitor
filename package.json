@@ -1,0 +1,38 @@
+{
+    "name": "system-monitor",
+    "version": "1.0.0",
+    "description": "System monitoring, optimization, and dependency management app with AI assistant",
+    "main": "src/main/main.js",
+    "scripts": {
+        "dev": "concurrently \"vite\" \"electron .\"",
+        "build": "vite build && electron-builder",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "systeminformation": "^5.21.0",
+        "electron-store": "^8.1.0",
+        "chart.js": "^4.4.0"
+    },
+    "devDependencies": {
+        "electron": "^28.0.0",
+        "vite": "^5.0.0",
+        "concurrently": "^8.2.0",
+        "electron-builder": "^24.9.0"
+    },
+    "build": {
+        "appId": "com.systemmonitor.app",
+        "productName": "System Monitor",
+        "directories": {
+            "output": "release"
+        },
+        "files": [
+            "dist/**/*",
+            "src/main/**/*",
+            "src/preload/**/*"
+        ],
+        "mac": {
+            "category": "public.app-category.utilities",
+            "target": "dir"
+        }
+    }
+}
